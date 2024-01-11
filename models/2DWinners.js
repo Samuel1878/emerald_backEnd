@@ -4,7 +4,7 @@ const Winners2D = new Schema({
         type:String,
         require:true
     },
-     name:{
+    name:{
       type:String,
       default:"Mr/Ms..."
     },
@@ -24,6 +24,14 @@ const Winners2D = new Schema({
       type: Number,
       required: true,
     },
+    times:{
+      type:Number,
+      require:false
+    },
+    dayId:{
+      type:String,
+      require:true
+    }
   },
   {
     timestamps: true,

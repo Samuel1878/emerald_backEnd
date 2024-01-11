@@ -32,6 +32,7 @@ const serverAdmin = {
         if (Day) {
           Day.isOver = true;
           Day.status = false;
+          Day.volume =
           await Day.save();
           res.status(200).json({messae:"successfully closed"});
           return;

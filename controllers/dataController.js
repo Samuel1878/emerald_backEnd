@@ -4,11 +4,8 @@ import logger from "../config/log/logger.js";
 import { decodeToken } from "../libs/helper/generator.js";
 import User from "../models/user.js";
 import Digits_2D from "../data/index.js";
-import fs from "fs";
-import path from "path"
 import Winners_2D from "../models/2DWinners.js";
 import Winners_3D from "../models/3DWinners.js";
-import { log } from "util";
 
 const dataController = {
     nameChange:async(req,res,next)=>{
@@ -26,21 +23,15 @@ const dataController = {
     },
     profileChange:async(req,res,next)=>{
         const {userToken} = req.query;
-        logger.debug(req.file);
         if (!req.file) {
           return res
             .status(401)
             .json({ success: false, message: "No file provided." });
         }
+        logger.debug(req.file);
         const decodedId = decodeToken(userToken);
         const user = await User.findOne({_id:decodedId.id}).select("-password");
         if(user){
-            // const img = fs.readFileSync(image,"base64");
-            // const final_img = img.toString("base64");
-            // user.image.data = new Buffer(final_img,"base64");
-            // user.image.contentType = "image/png"
-            // var img = fs.readFileSync(image);
-            // var decoded = img.toString("base64");
             user.image = req.file.buffer;
             user.imageType = req.file.mimetype;
             user.profile = req.file.mimetype.split("/")[1];

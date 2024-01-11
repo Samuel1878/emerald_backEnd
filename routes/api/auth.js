@@ -5,7 +5,9 @@ import dataController from "../../controllers/dataController.js";
 import multer from "multer";
 const authRouter = express.Router();
 
-var upload = multer();
+// var upload = multer();
+const storage = multer.memoryStorage(); // Store the file in memory
+const upload = multer({ storage: storage });
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     cb(null, "/uploads");

@@ -28,6 +28,7 @@ const serverUser = {
   users: async (req, res, next) => {
     const { page } = req.query;
     const users = await User.find({});
+    logger.tip(page);
     users && res.status(200).json({ users: users });
   },
   transactions: async (req, res, next) => {
