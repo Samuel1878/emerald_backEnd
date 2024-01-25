@@ -23,22 +23,22 @@ const dataController = {
     },
     profileChange:async(req,res,next)=>{
         const {userToken} = req.query;
-        if (!req.file) {
+        const {filename, path} = req.file;
+        if (!filename || !path) {
           return res
             .status(401)
             .json({ success: false, message: "No file provided." });
         }
-        logger.debug(req.file);
+        logger.debug(filename + ">FILE<" + path);
         const decodedId = decodeToken(userToken);
         const user = await User.findOne({_id:decodedId.id}).select("-password");
         if(user){
-            user.image = req.file.buffer;
-            user.imageType = req.file.mimetype;
-            user.profile = req.file.mimetype.split("/")[1];
+            user.profile = filename;
+            user.profilePath = path;
             try{
                 await user.save()
             }catch(err){
-                res.status(401).json({ message: "User not found" });
+                res.status(401).json({ message: "Saving error:check info" });
             }
             res.status(200).json({ message: "successfully uploaded" });
             return

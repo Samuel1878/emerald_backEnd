@@ -24,12 +24,8 @@ const user = new mongoose.Schema({
     profile:{
         type:String
     },
-    imageType:{
-        type:String,
-    },
-    image:{
-        type:Buffer,
-        require:false
+    profilePath:{
+        type:String
     },
     payments:{
         type:Array,

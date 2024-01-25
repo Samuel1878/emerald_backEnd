@@ -6,17 +6,17 @@ import multer from "multer";
 const authRouter = express.Router();
 
 // var upload = multer();
-const storage = multer.memoryStorage(); // Store the file in memory
+//const storage = multer.memoryStorage(); // Store the file in memory
+
+ const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "/uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
 const upload = multer({ storage: storage });
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "/uploads");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.fieldname + "-" + Date.now());
-//   },
-// });
-// const upload = multer({storage:storage})
 
 authRouter.post("/register", register.createUser);
 authRouter.post("/verification" , register.OTPverification)

@@ -69,10 +69,10 @@ const SocketLogic = (socket,io)=> {
         phone: data.phone,
         level: data.level,
         money: data.money,
-        image: data.image ? Buffer.from(data.image) : null,
         payments: data.payments,
         pin: data.pin,
-        imageType: data.imageType,
+        profile: data.profile,
+        profilePath:data.profilePath
       });
   });
   socket.on(TOPUP, async (userToken) => {
