@@ -5,18 +5,22 @@ import dataController from "../../controllers/dataController.js";
 import multer from "multer";
 const authRouter = express.Router();
 
+
 // var upload = multer();
 //const storage = multer.memoryStorage(); // Store the file in memory
 
  const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "/uploads");
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+   cb(null, file.fieldname + "-" + Date.now() + ".jpg");
   },
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fieldSize: 25 * 1024 * 1024 },
+});
 
 authRouter.post("/register", register.createUser);
 authRouter.post("/verification" , register.OTPverification)

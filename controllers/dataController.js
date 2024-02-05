@@ -23,27 +23,27 @@ const dataController = {
     },
     profileChange:async(req,res,next)=>{
         const {userToken} = req.query;
-        const {filename, path} = req.file;
-        if (!filename || !path) {
-          return res
+        const file = req.file;
+        if (!file) {
+          res
             .status(401)
-            .json({ success: false, message: "No file provided." });
+            .json({ message: "No file provided." });
+            return 
         }
-        logger.debug(filename + ">FILE<" + path);
         const decodedId = decodeToken(userToken);
         const user = await User.findOne({_id:decodedId.id}).select("-password");
-        if(user){
-            user.profile = filename;
-            user.profilePath = path;
-            try{
-                await user.save()
-            }catch(err){
-                res.status(401).json({ message: "Saving error:check info" });
-            }
-            res.status(200).json({ message: "successfully uploaded" });
-            return
-        }
-        res.status(401).json({ message: "User not found" });
+        // if(user){
+        //     user.profile = filename;
+        //     user.profilePath = path;
+        //     try{
+        //         await user.save()
+        //     }catch(err){
+        //         res.status(401).json({ message: "Saving error:check info" });
+        //     }
+        //     res.status(200).json({ message: "successfully uploaded" });
+        //     return
+        // }
+        // res.status(401).json({ message: "User not found" });
 
     },
     userData:async(req,res,next)=>{
