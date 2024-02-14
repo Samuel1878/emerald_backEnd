@@ -25,7 +25,7 @@ Routes(app);
 const io = socketServer(httpServer);
 io.on("connection", (socket)=>SocketLogic(socket,io));
 
-httpServer.listen(process.env.PORT, process.env.HOST, (err)=>{
+httpServer.listen(process.env.PORT, (err)=>{
     if(err)logger.err(err);
     logger.info( `Server is running at ${process.env.HOST}  :${process.env.PORT}`)   
 
