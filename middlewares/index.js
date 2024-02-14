@@ -6,5 +6,6 @@ const middleware = (app) => {
     app.use(bodyparser.json());
     app.use(express.json({extended:false}));
     app.use(cors());
+   
 };
 export default middleware;

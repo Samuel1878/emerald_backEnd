@@ -6,7 +6,7 @@ const user = new mongoose.Schema({
         required:true,
     },
     phone:{
-        type:Number,
+        type:String,
         required:true,
     },
     password:{
@@ -25,6 +25,9 @@ const user = new mongoose.Schema({
         type:String
     },
     profilePath:{
+        type:String
+    },
+    profileType:{
         type:String
     },
     payments:{

@@ -72,7 +72,9 @@ const SocketLogic = (socket,io)=> {
         payments: data.payments,
         pin: data.pin,
         profile: data.profile,
-        profilePath:data.profilePath
+        profilePath:data.profilePath,
+        profileType:data.profileType
+
       });
   });
   socket.on(TOPUP, async (userToken) => {

@@ -30,20 +30,25 @@ const dataController = {
             .json({ message: "No file provided." });
             return 
         }
+         
         const decodedId = decodeToken(userToken);
         const user = await User.findOne({_id:decodedId.id}).select("-password");
-        // if(user){
-        //     user.profile = filename;
-        //     user.profilePath = path;
-        //     try{
-        //         await user.save()
-        //     }catch(err){
-        //         res.status(401).json({ message: "Saving error:check info" });
-        //     }
-        //     res.status(200).json({ message: "successfully uploaded" });
-        //     return
-        // }
-        // res.status(401).json({ message: "User not found" });
+        if(user){
+              try {
+                console.log(file);
+                user.profile = file.filename;
+                user.profilePath = file.path;
+                user.profileType = file.mimetype;
+                await user.save();
+              } catch (err) {
+                res.status(404).json({ message: "Saving error:check info" });
+              }
+            res.status(200).json({ message: "successfully uploaded" });
+            return
+        } else {
+           res.status(403).json({ message: "User not found" });
+        }
+       
 
     },
     userData:async(req,res,next)=>{
@@ -112,6 +117,19 @@ const dataController = {
             return
          }
          res.status(403).json({message:"User not found!"});
+    },
+    deletePayments: async(req,res,next)=>{
+        const {userToken, method, name , phone} = req.body;
+        const decodedId = decodeToken(userToken);
+        const user = await User.findOne({_id:decodedId.id});
+        if(user){
+            const newArry = user.payments.filter((obj)=>obj.name !== name || obj.phone !== phone || obj.method !== method);
+            user.payments = newArry;
+            await user.save();
+            res.status(201).json({message:"successful"});
+            return 
+        }
+        res.status(401).json({ message: "user not found" });
     },
     _2dWinners:async(req,res,next)=>{
         const {page} = req.query;

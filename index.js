@@ -1,7 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import http from "http";
-import logger from "../poker_backEnd/log/logger.js";
+import logger from "./config/log/logger.js";
 import middleware from "./middlewares/index.js";
 import Routes from "./routes/index.js";
 import connectDB from "./config/database.js";
