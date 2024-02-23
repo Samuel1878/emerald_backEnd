@@ -19,8 +19,11 @@ export const dateGenerator = () => {
   let D = date.getDate();
   let T = date.getHours();
   let t = date.getTime();
+  let h = date.getHours();
+  let m = date.getMinutes();
+    let c = h + " : " + m;
   let P;
   T >= 12 ? (P = "ev") : (P = "af");
  
-  return {Y,M,D,P,t}
+  return {Y,M,D,P,t,c}
 };

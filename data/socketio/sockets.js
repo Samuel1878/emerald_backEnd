@@ -1,9 +1,10 @@
 
-import { BET_OPEN,BET_CLOSE, CHECK_BET, FETCH_BET, FETCH_INFO, RECEIVE_BET, RECEIVE_INFO, PAIR_UPDATED, UPDATED_INFO, TRANSACTION, TWODHISTORY, TOPUP, FETCH_ADMIN, RECEIVE_ADMIN, UPDATED_ADMIN, FETCH_SERVER, PAUSED_SERVER, RESUME_SERVER, ADDWINNER_NUMBER, CHECK, WINNERS, PASSWINNER_SERVER, CONNECT_SERVICE, MESSAGE, DISCONNECT_SERVICE, JOIN_SERVICE, JOINED_SERVICE } from "../../config/action.js"
+import { BET_OPEN,BET_CLOSE, CHECK_BET, FETCH_BET, FETCH_INFO, RECEIVE_BET, RECEIVE_INFO, PAIR_UPDATED, UPDATED_INFO, TRANSACTION, TWODHISTORY, TOPUP, FETCH_ADMIN, RECEIVE_ADMIN, UPDATED_ADMIN, FETCH_SERVER, PAUSED_SERVER, RESUME_SERVER, ADDWINNER_NUMBER, CHECK, WINNERS, PASSWINNER_SERVER, CONNECT_SERVICE, MESSAGE, DISCONNECT_SERVICE, JOIN_SERVICE, JOINED_SERVICE, THREEDHISTORY } from "../../config/action.js"
 import logger from "../../config/log/logger.js"
 import { dateGenerator, decodeToken } from "../../libs/helper/generator.js";
 import { fetchReceiveHis, fetchTransferHis } from "../../libs/index.js";
 import Numbers_2D from "../../models/Numbers_2D.js";
+import Numbers_3D from "../../models/Numbers_3D.js";
 import CashInOuts from "../../models/cashInOut.js";
 import Days2D from "../../models/day.js";
 import User from "../../models/user.js";
@@ -40,7 +41,7 @@ const SocketLogic = (socket,io)=> {
     }
   });
   socket.on(ADDWINNER_NUMBER, async ({ dayId, number }) => {
-    logger.info(number + "is lucky number for dayId" + dayId);
+    logger.info(number + " is lucky number for dayId" + dayId);
     const Day = await Days2D.findById(dayId);
     if (Day) {
       Day.winNumber = number;
@@ -87,7 +88,7 @@ const SocketLogic = (socket,io)=> {
     const tran = await fetchTransferHis(decodedId.id);
     const rec = await fetchReceiveHis(decodedId.id);
     let Trans = tran.concat(rec);
-
+    logger.debug(Trans.length)
     Trans && socket.emit(TRANSACTION, Trans);
   });
   socket.on(TWODHISTORY, async (userToken) => {
@@ -99,7 +100,14 @@ const SocketLogic = (socket,io)=> {
       socket.emit(TWODHISTORY, data);
     }
   });
-
+  socket.on(THREEDHISTORY,async(userToken)=>{
+    const decodedId = decodeToken(userToken);
+    const data = await Numbers_3D.find({owner:decodedId.id});
+    if(data){
+      data.reverse();
+      socket.emit(THREEDHISTORY, data);
+    }
+  } );
   // MESSAGER LOGIC
   socket.on(CONNECT_SERVICE, (userToken) => {
     const decodedId = decodeToken(userToken);

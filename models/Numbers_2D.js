@@ -42,6 +42,10 @@ const Numbers2D = new Schema(
       require: false,
       default: false,
     },
+    win:{
+      type:Boolean,
+      default:false
+    }
   },
   {
     timestamps: true,

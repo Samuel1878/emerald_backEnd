@@ -1,4 +1,5 @@
 import logger from "../config/log/logger.js";
+import Numbers_2D from "../models/Numbers_2D.js";
 import Days2D from "../models/day.js";
 
 const serverAdmin = {
@@ -15,7 +16,6 @@ const serverAdmin = {
     },
     fetchDay:async(req,res,next)=>{
         const {id} = req.body;
-            logger.info(id);
         if(id !== "null"){
             const Day = await Days2D.findOne({ _id: id });
             if (Day && id) {
@@ -29,10 +29,15 @@ const serverAdmin = {
     closeServer: async(req,res,next) => {
         const {id} = req.body;
         const Day = await Days2D.findOne({_id:id});
+        const Number = await Numbers_2D.find({dayId:id});
+
         if (Day) {
           Day.isOver = true;
           Day.status = false;
-          Day.volume =
+          Number.map(async(e)=>{
+            e.finished = true;
+            await e.save()
+          });
           await Day.save();
           res.status(200).json({messae:"successfully closed"});
           return;

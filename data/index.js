@@ -1,6 +1,7 @@
 import logger from "../config/log/logger.js";
 import { dateGenerator } from "../libs/helper/generator.js";
 import Winners_2D from "../models/2DWinners.js";
+import Numbers_2D from "../models/Numbers_2D.js";
 import Days2D from "../models/day.js";
 import User from "../models/user.js";
 
@@ -49,6 +50,16 @@ class Bet2D_Controller {
   }
   async _addMoney (times,socket) {
     const Day = await this._fetchDay();
+    const Number = await Numbers_2D.find({ dayId: this.id });
+     Number.map(async(e)=>{
+      if(e.number == Day.winNumber){
+        e.win = true ;
+        await e.save();
+        return
+      }
+      return
+    });
+
     Day.winners.forEach(async(key,value)=>{
       const user = await User.findById(value);
       if(user){
@@ -64,8 +75,8 @@ class Bet2D_Controller {
         });
         console.log(Winner);
         await Winner.save();
-        user.money += Winner.earn || parseInt(key) * parseInt(times);
-        user.earn += (Winner.earn || parseInt(key) * parseInt(times)) - parseInt(key);
+        user.money += Winner.earn || (parseInt(key) * parseInt(times));
+        user.earn += Winner.earn || (parseInt(key) * parseInt(times));
         await user.save();
         return
       };

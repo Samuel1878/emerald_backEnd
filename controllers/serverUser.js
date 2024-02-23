@@ -172,9 +172,10 @@ const serverUser = {
           user.money -= parseInt(betData.amount);
           Day.markModified("investors");
           Day.investors[user._id] += parseInt(betData.amount);
+            await numbers.save();
         }
         await Day.save()
-        await numbers.save();
+      
         await user.save();
         res.status(200).json({ message: Day.bets });
         return;
@@ -283,7 +284,7 @@ const serverUser = {
     const decodedId = decodeToken(userToken);
     const user = await User.findOne({ _id: decodedId.id });
     const To = await User.findOne({ phone: phone });
-    const { Y, M, D, P, t } = dateGenerator();
+    const { Y, M, D, P, t,c } = dateGenerator();
     if (user && To && user.pin === pin) {
       user.money -= amount;
       const tran = new Transactions({
@@ -294,8 +295,10 @@ const serverUser = {
         fromPhone: user.phone,
         from: user._id.toString(),
         to: To._id.toString(),
-        date: `${D}/${M}/${Y}`,
-        time: t,
+        date: D,
+        month:M,
+        year:Y,
+        time: c,
       });
       To.money += amount;
       To.save();

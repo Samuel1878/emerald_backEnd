@@ -2,8 +2,17 @@ import mongoose, { Schema } from "mongoose";
 const Transaction = new Schema(
   {
     date: {
-      type: String,
+      type: Number,
       require: true,
+    },
+    month:{
+      type:Number,
+      default:0
+      
+    },
+    year:{
+      type:Number,
+      default:2024
     },
     time: {
       type: String,

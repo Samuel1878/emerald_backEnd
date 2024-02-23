@@ -6,6 +6,8 @@ import User from "../models/user.js";
 import Digits_2D from "../data/index.js";
 import Winners_2D from "../models/2DWinners.js";
 import Winners_3D from "../models/3DWinners.js";
+import axios from "axios";
+import instanceReq from "../libs/helper/axios.js";
 
 const dataController = {
     nameChange:async(req,res,next)=>{
@@ -68,26 +70,23 @@ const dataController = {
         }res.json({code:403,message:"User not found"})
 
     },
-    twoD:async(req,res,next)=>{
-        const params = req.query.param;
-        logger.debug(params);
-        switch (params) {
-            case "live":
-                const live = await fetchLive();
-                res.status(200).json(live);
-                break;
-            case "results":
-                const results = await fetchResults();
-                res.status(200).json(results);
-                break;
-            case "threed":
-                const threed = await fetchthreed();
-                res.status(200).json(threed);
-                break;
-            default:
-                res.status(403).json("Invalid Params")
-                break;
-        }
+    threeD:async(req,res,next)=>{
+        const options = {
+          method: "GET",
+          url: "https://shwe-2d-live-api.p.rapidapi.com/3d-live",
+          headers: {
+            "X-RapidAPI-Key":
+              "2ebad97563msh9ab84284298e633p12a16cjsnd20f2d3f24a4",
+            "X-RapidAPI-Host": "shwe-2d-live-api.p.rapidapi.com",
+          },
+        };
+        const response = await instanceReq(options);
+        if(res){
+            res.status(200).json(response);
+            return
+        };
+        res.status(401).json({message:"ERROR WITH API"})
+
     
 
     },
@@ -152,7 +151,7 @@ const dataController = {
             amount:e.earn,
             name:e.name,
             phone:e.phone,
-            photo:e?.image,
+            photo:e?.profile,
         }));
         const sortGainers = gainer.sort((a,b)=>b.amount - a.amount)
         res.status(200).json(sortGainers);
@@ -169,6 +168,9 @@ const dataController = {
     },
     _calender:async(req,res,next)=>{
         
+    },
+    _userUsage : async(req,res,next) => {
+        const {dayId, userToken} = req.query;
     }
     
     
