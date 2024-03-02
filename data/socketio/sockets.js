@@ -3,13 +3,28 @@ import { BET_OPEN,BET_CLOSE, CHECK_BET, FETCH_BET, FETCH_INFO, RECEIVE_BET, RECE
 import logger from "../../config/log/logger.js"
 import { dateGenerator, decodeToken } from "../../libs/helper/generator.js";
 import { fetchReceiveHis, fetchTransferHis } from "../../libs/index.js";
+import Winners_2D from "../../models/2DWinners.js";
+import Winners_3D from "../../models/3DWinners.js";
 import Numbers_2D from "../../models/Numbers_2D.js";
 import Numbers_3D from "../../models/Numbers_3D.js";
 import CashInOuts from "../../models/cashInOut.js";
 import Days2D from "../../models/day.js";
 import User from "../../models/user.js";
-
 import Digits_2D from "../index.js";
+import * as dotenv from "dotenv";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { fromEnv } from "@aws-sdk/credential-providers";
+dotenv.config();
+const region = "ap-southeast-1"
+const s3Client = new S3Client({
+  credentials: fromEnv(),
+  region
+});
+
 const SocketLogic = (socket,io)=> {
   socket.on(FETCH_ADMIN, async (userToken) => {
     const decodedId = decodeToken(userToken);
@@ -63,7 +78,7 @@ const SocketLogic = (socket,io)=> {
     const decodedId = decodeToken(userToken);
     logger.info(decodedId.id + " is connected from " + socket.id);
     const data = await User.findOne({ _id: decodedId.id }).select("-password");
-    data &&
+    if(data){
       socket.emit(RECEIVE_INFO, {
         code: 201,
         name: data.name,
@@ -71,32 +86,47 @@ const SocketLogic = (socket,io)=> {
         level: data.level,
         money: data.money,
         payments: data.payments,
-        pin: data.pin,
-        profile: data.profile,
-        profilePath:data.profilePath,
-        profileType:data.profileType
-
+        pin: data.pin
       });
+      
+     
+    }else{
+      logger.warn("no user found")
+    }
+
+      
   });
   socket.on(TOPUP, async (userToken) => {
     const decodedId = decodeToken(userToken);
     const Trans = await CashInOuts.find({ id: decodedId.id });
     Trans && socket.emit(TOPUP, Trans);
   });
-  socket.on(TRANSACTION, async (userToken) => {
+  socket.on(TRANSACTION, async ({userToken,page}) => {
     const decodedId = decodeToken(userToken);
     const tran = await fetchTransferHis(decodedId.id);
     const rec = await fetchReceiveHis(decodedId.id);
-    let Trans = tran.concat(rec);
-    logger.debug(Trans.length)
-    Trans && socket.emit(TRANSACTION, Trans);
+    const numbers = await Numbers_2D.find({owner:decodedId.id});
+    const winners_2D = await Winners_2D.find({id:decodedId.id});
+    const winners_3D = await Winners_3D.find({id:decodedId.id});
+    const numbers_3D = await Numbers_3D.find({owner:decodedId.id});
+    const deposit = await CashInOuts.find({id:decodedId.id});
+    const succeed = deposit.filter((e)=>e.completed&& e.status==="success")
+    let Trans = tran.concat(rec).concat(numbers).concat(winners_2D).concat(succeed).concat(numbers_3D).concat(winners_3D);
+
+     Trans.sort((a,b)=>b.createdAt - a.createdAt);
+    let length = Trans.length
+    Trans &&
+      socket.emit(TRANSACTION, {
+        length: length,
+        data: Trans.slice(0, page>length?length:page)
+      });
   });
   socket.on(TWODHISTORY, async (userToken) => {
     const decodedId = decodeToken(userToken);
     const data = await Numbers_2D.find({ owner: decodedId.id });
 
     if (data) {
-      data.reverse();
+      data.sort((a,b)=>b.createdAt - a.createdAt);
       socket.emit(TWODHISTORY, data);
     }
   });

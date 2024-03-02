@@ -307,7 +307,7 @@ const serverUser = {
       res.status(200).json({ message: "successfully transfer" });
       return;
     }
-    res.status(401).json({ message: "transaction failed" });
+    res.status(403).json({ message: "transaction failed" });
   },
   pinManagement: async (req, res, next) => {
     const { pin, userToken } = req.body;
@@ -323,7 +323,7 @@ const serverUser = {
     next();
   },
   deposit: async (req, res, next) => {
-    const { phone, name, type, method, amount, oneTimeNo, file } = req.body;
+    const { phone, name, type, method, amount, oneTimeNo } = req.body;
     const { userToken } = req.query;
     const decodedId = decodeToken(userToken);
     const user = await User.findOne({ _id: decodedId.id });
@@ -338,7 +338,7 @@ const serverUser = {
         oneTimeNo: oneTimeNo,
       });
       depo.save();
-      res.status(201).json({ message: "successfully submitted" });
+      res.status(201).json({ message: "successfully submitted",id:depo._id });
       return;
     }
     res.status(404).json({ message: "user not found" });

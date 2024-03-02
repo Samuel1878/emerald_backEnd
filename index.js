@@ -8,6 +8,7 @@ import connectDB from "./config/database.js";
 import socketServer from "./libs/helper/socket.js";
 import SocketLogic from "./data/socketio/sockets.js";
 
+
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
@@ -31,6 +32,9 @@ httpServer.listen(process.env.PORT, (err)=>{
 
     
 });
+///AWS 
+
+
 
 //Error handling and close server
 process.on('unhandledRejection', (err)=>{

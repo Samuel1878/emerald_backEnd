@@ -10,4 +10,5 @@ dataRouter.get("/3d/winners",dataController._3dWinners);
 dataRouter.get("/topGainer",dataController._topGainers);
 dataRouter.get("/isUserRegistered",dataController.isUserRegistered);
 dataRouter.get("/calender", dataController._calender);
+dataRouter.get("/transactions", dataController._getTransactions);
 export default dataRouter

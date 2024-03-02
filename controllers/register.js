@@ -2,6 +2,7 @@
 import { gOTP } from "../libs/helper/generator.js";
 import { generateUsername } from "unique-username-generator";
 import User from "../models/user.js";
+import { s3Client } from "./dataController.js";
 
 const register = {
     createUser:async(req,res,next)=>{
@@ -18,6 +19,18 @@ const register = {
             password:password
         });
         await userData.save();
+        const writeParams = {
+                  Bucket: process.env.BUCKET_NAME,
+                  Key: process.env.PROFILE_OBJECT_KEY + userData._id,
+                  Body:file.buffer,
+                  ContentType:file.mimetype
+                };
+        s3Client
+            .send(new PutObjectCommand(writeParams))
+            .then((e)=>{
+                logger.debug(e);
+                })
+            .catch((e)=>logger.warn(e));
         res.json({code:201,message:`${name}just created an acount`});
         next();
     },

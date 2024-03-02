@@ -19,12 +19,20 @@ const Winners3D = new Schema(
     },
     capital: {
       type: Number,
-      required: true,
+      require: true,
     },
     earn: {
       type: Number,
       required: true,
     },
+    roundId:{
+      type:String,
+      require:true
+    },
+    times:{
+      type:Number,
+      require:false,
+    }
   },
   {
     timestamps: true,
